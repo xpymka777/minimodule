@@ -19,7 +19,14 @@ router.get('/refresh', userController.refresh);
 router.get('/users', userController.getUsers);
 
 //обновление пароля
-router.post('/change-password', body('email').isEmail(), userController.changePassword);
-router.post('/reset-password', body('token').notEmpty(), userController.resetPassword);
+router.post('/change-password',
+    body('email').isEmail(),
+    userController.changePassword
+);
+router.post('/reset-password',
+    body('token').notEmpty(),
+    body('newPassword').isLength({ min: 6 }),
+    userController.resetPassword
+);
 
 module.exports = router;
