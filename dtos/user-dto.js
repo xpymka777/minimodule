@@ -1,3 +1,4 @@
+//как ресурс в laravel, чтобы отдавать только нужные данные, а не вообще все
 module.exports = class UserDto{
     email;
     id;

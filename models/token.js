@@ -1,10 +1,13 @@
+// Импорт необходимых компонентов из библиотеки Sequelize
 const {Sequelize,DataTypes} = require('sequelize');
 
+// Создание объекта Sequelize для установления соединения с базой данных
 const sequelize = new Sequelize('module','postgres','root',{
     host: 'localhost',
     dialect: 'postgres'
 });
 
+// Определение модели Token
 const Token = sequelize.define('Token', {
     refreshToken: {
         type: DataTypes.STRING,
@@ -14,6 +17,7 @@ const Token = sequelize.define('Token', {
         }
     }
 },
+    //отключаем временные метки
 {
     timestamps: false
 });
@@ -25,4 +29,5 @@ sequelize.sync().then(() => {
     console.log(`Ошибка синхронизации с базой данных: ${error}`)
 })
 
+// Экспорт модели Token для использования в других частях приложения
 module.exports = Token;

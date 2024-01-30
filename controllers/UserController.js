@@ -2,10 +2,10 @@ const userService = require('../service/user-service')
 const {validationResult} = require('express-validator')
 const ApiError = require('../exceptions/api-error');
 const UserModel = require('../models/user')
-const {where} = require("sequelize");
-const bcrypt = require("bcrypt");
+// const {where} = require("sequelize");
+const bcrypt = require("bcrypt");//должно быть для того, чтобы сравнивать хеш паролей, но не работает
 const uuid = require("uuid");
-mailService = require('../service/mail-service')
+const mailService = require('../service/mail-service')
 
 class UserController {
 
@@ -75,12 +75,18 @@ class UserController {
             const user = await UserModel.findOne({
                 where: {
                     email,
-                    //password: await bcrypt.hash(currentPassword, 3), // не работает сравнение и паролей
                 },
             });
 
-            if (!user) {
-                return next(ApiError.BadRequest('Неверный email или текущий пароль.'));
+            if (user) {
+                const isComparePasswords = bcrypt.compare(currentPassword, user.password);
+
+                if (!isComparePasswords){
+
+                    return next(ApiError.BadRequest('Неверный текущий пароль.'));
+
+                }
+
             }
 
             // Генерация нового токена для сброса пароля
@@ -89,7 +95,7 @@ class UserController {
             await user.save();
 
             // Отправка email с ссылкой для сброса пароля
-            const resetLink = `${process.env.API_URL}/reset-password/${resetToken}`;
+            const resetLink = `${process.env.API_URL}api/reset-password/${resetToken}`;
             await mailService.sendPasswordResetMail(email, resetLink);
 
             return res.json({ message: 'Ссылка для сброса пароля отправлена на ваш email.', token: resetToken });

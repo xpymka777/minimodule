@@ -1,3 +1,4 @@
+//Данные для подключения к БД
 const {Pool} = require('pg');
 
 const pool = new Pool({

@@ -1,21 +1,25 @@
+// Импорт необходимых компонентов из библиотеки Sequelize
 const {Sequelize, DataTypes} = require('sequelize');
 
+// Создание объекта Sequelize для установления соединения с базой данных
 const sequelize = new Sequelize('module', 'postgres', 'root', {
     host: 'localhost',
     dialect: 'postgres'
 })
 
+// Функция для проверки пароля
 function checkStrongPassword(password) {
     // Проверка наличия латинских символов (минимум одна заглавная буква)
     const latinRegex = /[A-Z]/;
     // Проверка наличия цифр
     const digitRegex = /\d/;
-    // Проверка наличия спецсимволов (можете добавить или изменить символы по своему усмотрению)
+    // Проверка наличия спецсимволов
     const specialCharRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/;
 
     return latinRegex.test(password) && digitRegex.test(password) && specialCharRegex.test(password);
 }
 
+// Определение модели User
 const User = sequelize.define('User', {
     name: {
         type: DataTypes.STRING,
@@ -59,6 +63,7 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
+            // Проверка силы пароля с использованием функции checkStrongPassword
             isStrongPassword(value) {
                 if (!checkStrongPassword(value)) {
                     throw new Error('Пароль не соответствует требованиям.')
@@ -77,7 +82,7 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
     },
 },{
-
+    //отключаем временные метки
     timestamps: false
 
 });
@@ -89,4 +94,5 @@ sequelize.sync().then(() => {
     console.log(`Ошибка синхронизации с базой данных: ${error}`)
 })
 
+// Экспорт модели User для использования в других частях приложения
 module.exports = User;
