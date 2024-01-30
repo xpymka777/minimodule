@@ -9,20 +9,23 @@ const mailService = require('../service/mail-service')
 
 class UserController {
 
-    async registration(req, res, next){
+    async registration(req, res, next) {
         try {
+            // Валидация данных при регистрации
             const errors = validationResult(req);
-            if (!errors.isEmpty()){
+            if (!errors.isEmpty()) {
                 return next(ApiError.BadRequest('Ошибка валидации', errors.array()));
             }
-            const {name,surname,middlename,email,username,password,is_confirmed} = req.body;
-            const userData = await userService.registration(name,surname,middlename,email,username,password,is_confirmed);
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true})
+
+            const { name, surname, middlename, email, username, password, is_confirmed } = req.body;
+            const userData = await userService.registration(name, surname, middlename, email, username, password, is_confirmed);
+            res.cookie('refreshToken', userData.refreshToken, { maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true });
             return res.json(userData);
-        }catch (e) {
-            next(e);
+        } catch (error) {
+            // Обработка других ошибок
+            return next(ApiError.BadRequest('Внутренняя ошибка сервера', error.message));
         }
-    };
+    }
 
     async login(req, res, next){
         try {
