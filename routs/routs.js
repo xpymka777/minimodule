@@ -3,9 +3,24 @@
 const Router = require('express').Router;
 const userController = require('../controllers/UserController')
 const {body} = require('express-validator');
+const swaggerJSDoc = require('swagger-jsdoc');
 
 // Создание экземпляра маршрутизатора
 const router = new Router();
+
+// Определение конфигурации Swagger
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Модуль регистрации',
+            version: '1.0.0',
+        },
+    },
+    apis: [__dirname + '/../controllers/UserController.js'], // Укажите путь к вашему контроллеру
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Определение маршрутов
 router.post('/registration', [
@@ -32,6 +47,12 @@ router.post('/reset-password',
     body('token').notEmpty(),
     userController.resetPassword // Обработчик сброса пароля
 );
+
+// Добавление Swagger JSON в эндпоинт /swagger.json
+router.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
 
 // Экспорт маршрутизатора для использования в приложении
 module.exports = router;

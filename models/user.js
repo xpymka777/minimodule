@@ -96,3 +96,4 @@ sequelize.sync().then(() => {
 
 // Экспорт модели User для использования в других частях приложения
 module.exports = User;
+
